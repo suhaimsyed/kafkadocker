@@ -79,3 +79,7 @@ docker-compose -f zk-multiple-kafka-multiple.yml down
  docker-compose -f full-stack.yml up
  docker-compose -f full-stack.yml down
  ```
+ 
+ Run KSQL CLI:
+
+ docker-compose exec ksql-cli ksql http://ksql-server:8088

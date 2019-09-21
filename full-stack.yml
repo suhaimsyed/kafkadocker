@@ -147,3 +147,22 @@ services:
       SERVER_HTTP_PORT: 9000
     depends_on:
       - zoo1
+
+
+  ksql-server:
+    image: confluentinc/cp-ksql-server:5.1.0
+    depends_on:
+      - kafka1
+     # - schema-registry
+    environment:
+      KSQL_BOOTSTRAP_SERVERS: PLAINTEXT://kafka1:19092
+      KSQL_LISTENERS: http://0.0.0.0:8088
+      KSQL_KSQL_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      #KSQL_KSQL_SERVICE_ID: confluent_rmoff_01
+
+  ksql-cli:
+    image: confluentinc/cp-ksql-cli:5.1.0
+    depends_on:
+      - ksql-server
+    entrypoint: /bin/sh
+    tty: true

@@ -81,5 +81,6 @@ docker-compose -f zk-multiple-kafka-multiple.yml down
  ```
  
  Run KSQL CLI:
-
- docker-compose exec ksql-cli ksql http://ksql-server:8088
+ ```
+docker-compose -f full-stack.yml exec ksql-cli ksql http://ksql-server:8088
+  ```

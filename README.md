@@ -84,3 +84,51 @@ docker-compose -f zk-multiple-kafka-multiple.yml down
  ```
 docker-compose -f full-stack.yml exec ksql-cli ksql http://ksql-server:8088
   ```
+  
+ To Create streams using KSQL 
+ 
+ ```
+ CREATE STREAM testTopic1 \
+  (orderid VARCHAR, \
+   tenant VARCHAR) \
+  WITH (KAFKA_TOPIC='testTopic1', \
+        VALUE_FORMAT='JSON');
+        
+ CREATE STREAM testTopic1_2 \
+      (totalAmount STRUCT< \
+            amount DOUBLE >   , \
+       orderid VARCHAR, \
+       tenant VARCHAR) \
+WITH (KAFKA_TOPIC='testTopic1', VALUE_FORMAT='JSON');       
+ ```
+
+For this we have to create a testTopic1 and have a JSON as below
+
+ ```
+ {"orderid":"o123","tenant":"ecommerce","totalAmount":{"amount":150.0}}
+  ```
+  
+ To get orders per 5 minutes
+ ```
+ CREATE TABLE ORDERS_AGG AS 
+  SELECT 
+  		WINDOWSTART() AS WINDOW_START_TS, 
+         COUNT(*),tenant AS ORDER_COUNT
+    FROM testTopic1 
+           WINDOW TUMBLING (SIZE 5 MINUTES)
+           group by tenant;
+
+ ```
+  
+  To get order total or revenue per 5 minutes
+  ```
+  CREATE TABLE ORDERS_AGG_3 AS 
+  SELECT 
+  		WINDOWSTART() AS WINDOW_START_TS, 
+         SUM(totalAmount->amount)
+         AS SUM
+         ,tenant AS TENANT
+    FROM testTopic1_2 
+           WINDOW TUMBLING (SIZE 5 MINUTES)
+           group by tenant;
+  ```
